@@ -40,6 +40,10 @@ def main():
             run_periodograms_and_detrend(
                 star_id, time, flux, dtr_dict, n_threads=nworkers,
                 magisflux=True, return_extras=True, cachepath=cachepath,
+                period_min=1, period_max=100,
+                R_star_min=0.7, R_star_max=1.,
+                M_star_min=0.7, M_star_max=1.,
+                n_transits_min=4, oversampling_factor=5,
                 verbose=True
             )
         )

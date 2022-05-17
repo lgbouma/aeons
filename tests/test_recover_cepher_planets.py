@@ -44,11 +44,12 @@ def main():
                 R_star_min=0.7, R_star_max=1.,
                 M_star_min=0.7, M_star_max=1.,
                 n_transits_min=4, oversampling_factor=5,
-                verbose=True
+                verbose=False
             )
         )
 
         outdir = os.path.join(RESULTSDIR,'recover_cepher_planets')
+        if not os.path.exists(outdir): os.mkdir(outdir)
         plot_detrend_check(star_id, outdir, dtr_dict, dtr_stages_dict, r=r,
                            instrument='kepler')
 

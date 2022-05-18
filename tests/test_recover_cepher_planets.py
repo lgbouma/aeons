@@ -12,13 +12,13 @@ import multiprocessing as mp
 nworkers = mp.cpu_count()
 
 from cdips.lcproc.find_planets import (
-    run_periodograms_and_detrend, plot_detrend_check
+    run_periodograms_and_detrend, plot_detrend_check, plot_tls_results
 )
 
 def main():
 
     star_ids = [
-        'Kepler-1627', 'Kepler-1643', 'KOI-7913', 'KOI-7368'
+        'Kepler-1627', 'Kepler-1643', 'KOI-7368', 'KOI-7913'
     ]
 
     for star_id in star_ids:
@@ -28,6 +28,8 @@ def main():
         if not os.path.exists(lcdir): os.mkdir(lcdir)
 
         lcc = get_kepler_lightcurve(star_id, download_dir=lcdir)
+        if star_id == 'KOI-7913':
+            lcc = [l for l in lcc if l.LABEL == 'KIC 8873450']
         time, flux, flux_err = mask_quality_and_stitch(lcc)
 
         dtr_method, break_tolerance, window_length = 'best', 0.5, 0.5
@@ -44,14 +46,19 @@ def main():
                 R_star_min=0.7, R_star_max=1.,
                 M_star_min=0.7, M_star_max=1.,
                 n_transits_min=4, oversampling_factor=5,
-                verbose=False
+                verbose=True
             )
         )
 
         outdir = os.path.join(RESULTSDIR,'recover_cepher_planets')
         if not os.path.exists(outdir): os.mkdir(outdir)
-        plot_detrend_check(star_id, outdir, dtr_dict, dtr_stages_dict, r=r,
-                           instrument='kepler')
+
+        plot_detrend_check(
+            star_id, outdir, dtr_dict,
+            dtr_stages_dict, r=r, instrument='kepler'
+        )
+
+        plot_tls_results(star_id, outdir, cachepath, dtr_dict)
 
 
 if __name__ == "__main__":

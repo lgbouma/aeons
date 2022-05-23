@@ -1,3 +1,8 @@
+"""
+See discussion at https://github.com/hippke/tls/issues/102
+"""
+import os
+from aeons.paths import DATADIR
 import pandas as pd, numpy as np, matplotlib.pyplot as plt
 from transitleastsquares import transitleastsquares
 import multiprocessing as mp
@@ -19,10 +24,12 @@ def p2p_rms(flux):
     p2p = np.mean([up_p2p, lo_p2p])
     return p2p
 
-csvpath = 'KOI-7368_npoints50000.csv'
+csvpath = os.path.join(DATADIR, 'tests', 'KOI-7368_npoints50000.csv')
 df = pd.read_csv(csvpath)
 time, flux = np.array(df.time), np.array(df.flux)
 
+# NOTE: not actually necessary for TLS to converge, but a good idea
+# regardless because it lowers the noise floor in the periodogram
 from astropy.stats import sigma_clip
 flux = sigma_clip(flux, sigma_upper=3, sigma_lower=3)
 

@@ -38,7 +38,7 @@ def main():
                     'break_tolerance':break_tolerance,
                     'window_length':window_length}
 
-        search_method = 'bls'
+        search_method = 'tls'
         cachepath = os.path.join(
             LOCALDIR, f"{star_id}_{search_method}_search.pkl"
         )
@@ -47,7 +47,8 @@ def main():
                 star_id, time, flux, dtr_dict,
                 search_method=search_method, n_threads=nworkers,
                 magisflux=True, return_extras=True, cachepath=cachepath,
-                period_min=1, period_max=100, verbose=True
+                period_min=1, period_max=100, verbose=True,
+                slide_clip_lo=5, slide_clip_hi=3
             )
         )
 

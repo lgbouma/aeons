@@ -11,7 +11,7 @@ nworkers = mp.cpu_count()
 
 from cdips.lcproc.find_planets import (
     detrend_and_iterative_tls, plot_detrend_check,
-    plot_planet_finding_results
+    plot_iterative_planet_finding_results
 )
 
 def main():

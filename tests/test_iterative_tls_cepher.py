@@ -17,11 +17,10 @@ from cdips.utils import lcutils as lcu
 import multiprocessing as mp
 nworkers = mp.cpu_count()
 
-def main():
+def main(inject_synthetic=False):
 
     star_ids = [
-        #'Kepler-1627', 'Kepler-1643', 'KOI-7368', 'KOI-7913'
-        'KOI-7368'
+        'Kepler-1627', 'Kepler-1643', 'KOI-7368', 'KOI-7913'
     ]
 
     for star_id in star_ids:
@@ -34,13 +33,14 @@ def main():
             lcc = [l for l in lcc if l.LABEL == 'KIC 8873450']
         time, flux, flux_err = mask_quality_and_stitch(lcc)
 
-        inj_dict = {
-            'period':7.202,
-            'epoch':np.nanmin(time)+0.42,
-            'depth':1000e-6
-        }
-        time, flux, _ = lcu.inject_transit_signal(time, flux, inj_dict)
-        star_id = star_id + "-synth"
+        if inject_synthetic:
+            inj_dict = {
+                'period':7.202,
+                'epoch':np.nanmin(time)+0.42,
+                'depth':1000e-6
+            }
+            time, flux, _ = lcu.inject_transit_signal(time, flux, inj_dict)
+            star_id = star_id + "-synth"
 
         dtr_dict = {
             'method':'best', 'break_tolerance':0.5, 'window_length':0.5
@@ -53,9 +53,9 @@ def main():
         outdicts = (
             detrend_and_iterative_tls(
                 star_id, time, flux, dtr_dict,
-                period_min=5, period_max=10,
-                R_star_min=0.8, R_star_max=1,
-                M_star_min=0.8, M_star_max=1,
+                period_min=1, period_max=50,
+                R_star_min=0.7, R_star_max=1,
+                M_star_min=0.7, M_star_max=1,
                 n_transits_min=3,
                 search_method=search_method, n_threads=nworkers,
                 magisflux=True, cachepath=cachepath,
@@ -74,7 +74,8 @@ def main():
         )
 
         plot_iterative_planet_finding_results(
-            star_id, search_method, outdir, cachepath, dtr_dict
+            star_id, search_method, outdir, cachepath, dtr_dict,
+            overwrite=1
         )
 
         with open(cachepath, 'rb') as f:

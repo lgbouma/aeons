@@ -74,6 +74,14 @@ def main():
             cachepath = os.path.join(
                 LOCALDIR, f"{star_id}_{search_method}_iterative_search.pkl"
             )
+            outpath = os.path.join(
+                RESULTSDIR, "cepher_koi_injectrecovery",
+                f"{star_id}_{search_method}_recovery_result.csv"
+            )
+
+            if os.path.exists(outpath):
+                LOGINFO(f"Found {outpath}, continue.")
+                continue
 
             lcdir = os.path.join(PHOTDIR, _star_id)
             if not os.path.exists(lcdir): os.mkdir(lcdir)
@@ -134,22 +142,22 @@ def main():
             inj_dict['partial_recovered'] = weakrecov
 
             outdf = pd.DataFrame(inj_dict, index=[0])
-            outpath = os.path.join(
-                RESULTSDIR, "cepher_koi_injectrecovery",
-                f"{star_id}_{search_method}_recovery_result.csv"
-            )
             outdf.to_csv(outpath, index=False)
             LOGINFO(f'made {outpath}')
 
             dtr_stages_dict = outdicts['dtr_stages_dict']
-            plot_detrend_check(
-                star_id, outdir, dtr_dict,
-                dtr_stages_dict, r=outdicts[0]['r'], instrument='kepler'
-            )
 
+            MAKE_DETREND_CHECK = 0
+            if MAKE_DETREND_CHECK:
+                plot_detrend_check(
+                    star_id, outdir, dtr_dict,
+                    dtr_stages_dict, r=outdicts[0]['r'], instrument='kepler'
+                )
+
+            OVERWRITE = 0
             plot_iterative_planet_finding_results(
                 star_id, search_method, outdir, cachepath, dtr_dict,
-                overwrite=True
+                overwrite=OVERWRITE
             )
 
 

@@ -50,15 +50,18 @@ from cdips.lcproc.find_planets import (
 from cdips.utils import lcutils as lcu
 
 import multiprocessing as mp
-nworkers = mp.cpu_count()
+#nworkers = mp.cpu_count()
+# NOTE: tls doesn't multithread well, better to run in serial w/ subfraction of
+# workers.
+nworkers = 24
 
 def main():
 
     # r_star, m_star
     star_dict = {
-        'Kepler-1643': [(0.855, 0.044), (0.845, 0.025)],
-        'Kepler-1627': [(0.881, 0.018), (0.953, 0.019)],
-        'KOI-7368': [(0.876, 0.035), (0.879, 0.018)],
+        #'Kepler-1643': [(0.855, 0.044), (0.845, 0.025)],
+        #'Kepler-1627': [(0.881, 0.018), (0.953, 0.019)],
+        #'KOI-7368': [(0.876, 0.035), (0.879, 0.018)],
         'KOI-7913': [(0.790, 0.049), (0.760, 0.025)],
     }
 

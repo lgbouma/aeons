@@ -64,15 +64,19 @@ for ix, r in df.iterrows():
     a_90_10 = np.round(d['a_90_10'], 6)
     bpmrp = np.round(r['phot_bp_mean_mag'] - r['phot_rp_mean_mag'], 4)
     g = np.round(r['phot_g_mean_mag'], 4)
+    M_G = np.round(r['phot_g_mean_mag'] + 5*np.log10(r['parallax']/1e3) + 5, 4)
     weight = np.round(r['weight'], 6)
 
-    outrow = (star_id, ls_period, ls_fap, ls_amplitude, a_90_10, bpmrp, g, weight)
+    outrow = (
+        star_id, ls_period, ls_fap, ls_amplitude, a_90_10, bpmrp, g, M_G,
+        weight, str(r['dr2_source_id']), str(r['dr3_source_id'])
+    )
     outrows.append(outrow)
 
 df = pd.DataFrame(
     outrows,
-    columns=['star_id', 'ls_period', 'ls_fap', 'ls_amplitude', 'a_90_10', 'bpmrp', 'g',
-             'weight']
+    columns=['star_id', 'ls_period', 'ls_fap', 'ls_amplitude', 'a_90_10',
+             'bpmrp', 'g', 'M_G', 'weight', 'dr2_source_id', 'dr3_source_id']
 )
 # We want LS periods for everything!
 assert not np.any(np.isnan(df.ls_period))
@@ -108,7 +112,8 @@ xytuples = [
     ('bpmrp', 'ls_period', 'linear', 'linear'),
     ('bpmrp', 'ls_period', 'linear', 'log'),
     ('bpmrp', 'ls_amplitude', 'linear', 'log'),
-    ('bpmrp', 'a_90_10', 'linear', 'log')
+    ('bpmrp', 'a_90_10', 'linear', 'log'),
+    ('bpmrp', 'M_G', 'linear', 'linear')
 ]
 
 for xytuple in xytuples:
@@ -156,6 +161,9 @@ for xytuple in xytuples:
         'xscale': xscale,
         'yscale': yscale
     })
+
+    if ykey == 'M_G':
+        ax.set_ylim(ax.get_ylim()[::-1])
 
     fig.savefig(outpath, dpi=300, bbox_inches='tight')
     print(f'Made {outpath}')
@@ -208,6 +216,9 @@ for xytuple in xytuples:
         'xscale': xscale,
         'yscale': yscale
     })
+
+    if ykey == 'M_G':
+        ax.set_ylim(ax.get_ylim()[::-1])
 
     fig.savefig(outpath, dpi=300, bbox_inches='tight')
     print(f'Made {outpath}')

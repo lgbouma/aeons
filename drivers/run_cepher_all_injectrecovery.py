@@ -76,10 +76,10 @@ def main():
     df = df.sort_values(by='bpmrp', ascending=False).reset_index(drop=True)
 
     # USER: UPDATE HERE!
-    #df = df[0:44] # job0
+    df = df[:45] # job0
     #df = df[45:45+44] # job1
     #df = df[45+44:45+44+44] #job2
-    df = df[45+44+44:] #job3
+    #df = df[45+44+44:] #job3
 
     # assumes ZAMS, so underestimates radii past BP-RP=1.2, ~=K2V.
     df['r_star'] = get_interp_Rstar_from_BpmRp(np.array(df.bpmrp))
@@ -101,14 +101,14 @@ def main():
     ln_pl_orbper = np.random.uniform(low=np.log(2), high=np.log(64),
                                      size=(N_injrecov_per_star, N_stars))
 
-    r_pl = np.exp(ln_r_pl)*u.R_earth
+    r_pl = np.exp(ln_r_pl)
     pl_orbper = np.exp(ln_pl_orbper)
 
     for ix, _star_id in zip(range(N_stars), df.star_id):
 
         for r_pl, pl_orbper in product(r_pl[:,ix], pl_orbper[:,ix]):
 
-            star_id = _star_id + f"-synth-P{pl_orbper:.4f}d-Rp{r_pl.value:.4f}"
+            star_id = _star_id + f"-synth-P{pl_orbper:.4f}d-Rp{r_pl:.4f}"
             search_method = 'tls'
             cachepath = os.path.join(
                 LOCALDIR, f"{star_id}_{search_method}_iterative_search.pkl"
@@ -140,7 +140,7 @@ def main():
 
             # injection-related steps
             r_star = float(df.loc[df.star_id == _star_id, 'r_star'])*u.Rsun
-            rp_rs = (r_pl / r_star).cgs.value
+            rp_rs = (r_pl*u.R_earth / r_star).cgs.value
             epoch = np.nanmin(time)+np.random.uniform(low=0,high=pl_orbper)
             depth = rp_rs**2
             inj_dict = {
@@ -148,7 +148,7 @@ def main():
                 'period':pl_orbper,
                 'epoch':epoch,
                 'depth':depth,
-                'r_pl':r_pl.to(u.Rearth).value,
+                'r_pl':r_pl, # R_earth
                 'r_star':r_star.to(u.Rsun).value,
                 'rp_rs':rp_rs
             }

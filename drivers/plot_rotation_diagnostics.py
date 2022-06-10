@@ -132,7 +132,8 @@ for xytuple in xytuples:
     cmap = mpl.cm.get_cmap('plasma')
 
     _p = ax.scatter(
-        df[xkey], df[ykey], s=3, c=color, zorder=2, cmap=cmap, vmax=-1
+        df[xkey], df[ykey], s=3, c=color, zorder=2, cmap=cmap,
+        vmax=np.log10(0.2)
     )
 
     if xkey == 'bpmrp' and ykey =='ls_period':
@@ -187,7 +188,7 @@ for xytuple in xytuples:
 
     _p = ax.scatter(
         df[df.selected][xkey], df[df.selected][ykey], s=3, c=selcolor, zorder=3,
-        cmap=cmap, vmax=-1
+        cmap=cmap, vmax=np.log10(0.2)
     )
 
     if xkey == 'bpmrp' and ykey =='ls_period':

@@ -94,19 +94,16 @@ def main():
     np.random.seed(42)
 
     N_stars = len(df)
-    N_injrecov_per_star = 10 # approx 2-week runtime
-
-    ln_r_pl = np.random.uniform(low=np.log(0.5), high=np.log(16),
-                                size=(N_injrecov_per_star, N_stars))
-    ln_pl_orbper = np.random.uniform(low=np.log(2), high=np.log(64),
-                                     size=(N_injrecov_per_star, N_stars))
-
-    _r_pl = np.exp(ln_r_pl)
-    _pl_orbper = np.exp(ln_pl_orbper)
+    N_injrecov_per_star = 20 # approx 2-week runtime, with 4x job thread
 
     for ix, _star_id in zip(range(N_stars), df.star_id):
 
-        for r_pl, pl_orbper in product(_r_pl[:,ix], _pl_orbper[:,ix]):
+        for _ in range(N_injrecov_per_star):
+
+            ln_r_pl = np.random.uniform(low=np.log(0.5), high=np.log(16))
+            ln_pl_orbper = np.random.uniform(low=np.log(2), high=np.log(64))
+            r_pl = np.exp(ln_r_pl)
+            pl_orbper = np.exp(ln_pl_orbper)
 
             star_id = _star_id + f"-synth-P{pl_orbper:.4f}d-Rp{r_pl:.4f}"
             search_method = 'tls'
